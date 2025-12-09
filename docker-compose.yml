@@ -30,7 +30,7 @@ services:
         .env #con dentro specificate tutte le variabili d'ambiente necessarie
 
       healthcheck: # Verifica salute 
-
+        
     mariadb:
 
 volumes: #volumi condivisi 
