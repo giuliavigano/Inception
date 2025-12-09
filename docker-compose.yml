@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+    nginx:
+      build: #lanci dockerfile per l'image ?
+        context: # Directory con Dockerfile
+        dockerfile: #nome file (opzionale)
+
+      container_name: my-nginx-container # deve avere un altro nome ?
+
+      ports: # host_port:container_port
+        443:443 # ??
+
+      volumes: # ho bisogno di dati persistenti ?
+        # ./directory:/container  ?
+
+
+      restart: # istuzioni su quando fare restart
+      # OPZIONI : 
+        restart: "no" # NON riavviare mai
+        restart: always # SEMPRE, anche dopo Reboot
+        restart: on-failure # SOLO se CRASHA
+        restart: unless-stopped # SEMPRE; TRANNE SE FERMATO MANUALMENTE
+
+      depends_on: # per specificare un ORDINE DI AVVIO, aspetta solo che il container sia avviato NON che il servizio sia pronto
+
+      environment: # variabili di ambiente 
+      # OPPURE
+      env_file:
+        .env #con dentro specificate tutte le variabili d'ambiente necessarie
+
+      healthcheck: # Verifica salute 
+
+    mariadb:
+
+volumes: #volumi condivisi 
+    //
+
+networks: #reti personalizzate ?
