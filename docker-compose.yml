@@ -1,39 +1,71 @@
 version: '3.8'
 
 services:
-    nginx:
-      build: #lanci dockerfile per l'image ?
-        context: # Directory con Dockerfile
-        dockerfile: #nome file (opzionale)
+  nginx:
+    container_name: nginx
+    build: ./requirement/nginx
+    ports:
+      -  "443:443"
+    networks:
+      -  inception
+    depends_on:
+      -  wordpress
+    secrets:
+      -  db_root_password
+    restart:  always
+	
+  mariadb:
+    container_name:  mariadb
+    build:  ./requirments/mariadb
+    networks:
+      -  inception
 
-      container_name: my-nginx-container # deve avere un altro nome ?
+    volume:
+	
+    restart:  always
+		
+  wordpress:
+    container_name:  wordpress
+    build:  ./requirments/wordpress
+    networks:
+      -  inception
 
-      ports: # host_port:container_port
-        443:443 # ??
+    volume:
 
-      volumes: # ho bisogno di dati persistenti ?
-        # ./directory:/container  ?
+    restart:  always
+
+# Verifica salute ??
+healthcheck:
 
 
-      restart: # istuzioni su quando fare restart
+secrets:
+  db_root_password:
+    file:  ./secrets/db_root_password.txt
+
+# volumi condivisi 
+volumes:
+
+
+# rete docker interna in i 3 container (nginx, mariadb, wordpress) comunicano tra loro
+networks:
+    inception:
+      name:  inception
+
+# depends_on:   per specificare un ORDINE DI AVVIO 
+# --> aspetta solo che il container sia avviato NON che il servizio sia pronto
+
+#restart: # istuzioni su quando fare restart
       # OPZIONI : 
-        restart: "no" # NON riavviare mai
-        restart: always # SEMPRE, anche dopo Reboot
-        restart: on-failure # SOLO se CRASHA
-        restart: unless-stopped # SEMPRE; TRANNE SE FERMATO MANUALMENTE
+      # restart: "no" # NON riavviare mai
+      # restart: always # SEMPRE, anche dopo Reboot
+      # restart: on-failure # SOLO se CRASHA
+      # restart: unless-stopped # SEMPRE; TRANNE SE FERMATO MANUALMENTE
 
-      depends_on: # per specificare un ORDINE DI AVVIO, aspetta solo che il container sia avviato NON che il servizio sia pronto
+# Variabili di ambiente -->
+# environment:
+	# DB_HOST: mariadb
+	# DB_NAME: wordpress
 
-      environment: # variabili di ambiente 
-      # OPPURE
-      env_file:
-        .env #con dentro specificate tutte le variabili d'ambiente necessarie
-
-      healthcheck: # Verifica salute 
-        
-    mariadb:
-
-volumes: #volumi condivisi 
-    //
-
-networks: #reti personalizzate ?
+# OPPURE -->
+# env_file:
+	# .env --> con dentro specificate tutte le variabili d'ambiente necessarie
