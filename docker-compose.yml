@@ -6,22 +6,16 @@ services:
     build: ./requirement/nginx
     ports:
       -  "443:443"
+      -  "80:80"
     networks:
       -  inception
     depends_on:
-      -  wordpress
+      wordpress:
+        condition: service_healthy
+    volumes:
+      - wordpress_data:/var/www/html # condiviso con wordpress ?
     secrets:
       -  db_root_password
-    restart:  always
-	
-  mariadb:
-    container_name:  mariadb
-    build:  ./requirments/mariadb
-    networks:
-      -  inception
-
-    volume:
-	
     restart:  always
 		
   wordpress:
@@ -29,27 +23,78 @@ services:
     build:  ./requirments/wordpress
     networks:
       -  inception
-
-    volume:
-
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - wordpress_data:/var/www/html # perchè quel path??
     restart:  always
 
-# Verifica salute ??
-healthcheck:
-
-
-secrets:
-  db_root_password:
-    file:  ./secrets/db_root_password.txt
+  mariadb:
+    container_name:  mariadb
+    build:  ./requirments/mariadb
+    networks:
+      -  inception
+    volumes:
+      - mariadb_data:/var/lib/mysql # perchè quel path??
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s 
+    restart:  always
 
 # volumi condivisi 
 volumes:
-
+  wordpress_data:
+# Driver: Default: local ??
+    driver: local
+  mariadb_data:
+    driver: local 
 
 # rete docker interna in i 3 container (nginx, mariadb, wordpress) comunicano tra loro
 networks:
     inception:
       name:  inception
+
+secrets:
+  db_root_password:
+    file:  ./secrets/db_root_password.txt
+
+
+
+
+# Verifica funzionamento corrente di un container:
+
+#mariadb:
+#healthcheck:
+	#test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+
+# CMD : cosi da eseguire il comando direttamente senza shell
+# mysqladmin : tool di amministrazione MySQL/MariaDB --> INTERFACCIA COMMAND-LINE per operazioni amministrative --> NON richiede autenticazione per il comando ping
+# ping : Tenta di connettersi al server MySQL/MariaDB --> invia un "ping" al demone mysqld, se il server risponde con "pong" TUTTO OK!
+# -h localhost : indirizzo del server da pingare --> MariaDB è gia in ascolto su localhost e poi stiamo testando il server nello stesso container
+
+# MENTRE -->
+# test: ["CMD", "pgrep", "mysqld"] --> SBAGLIATO, controlla solo SE il processo mysqld è RUNNING.
+
+#wordpress:
+#healthcheck:
+      #test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+
+# CMD-SHELL : comando eseguito sulla shell
+# php-fpm -t : legge il FILE di CONFIGURAZIONE di PHP-FPM
+
+# --> NON avvia il servizio, TESTA solo che PHP-FPM ACCETTI CONNESSIONI!
+
+
 
 # depends_on:   per specificare un ORDINE DI AVVIO 
 # --> aspetta solo che il container sia avviato NON che il servizio sia pronto
