@@ -5,24 +5,22 @@ services:
     container_name: nginx
     build: ./requirement/nginx
     ports:
-      -  "443:443"
-      -  "80:80"
+      - "443:443"
+      - "80:80"
     networks:
-      -  inception
+      - inception
     depends_on:
       wordpress:
         condition: service_healthy
     volumes:
       - wordpress_data:/var/www/html # condiviso con wordpress ?
-    secrets:
-      -  db_root_password
-    restart:  always
+    restart: unless-stopped
 		
   wordpress:
-    container_name:  wordpress
-    build:  ./requirments/wordpress
+    container_name: wordpress
+    build: ./requirments/wordpress
     networks:
-      -  inception
+      - inception
     healthcheck:
       test: ["CMD-SHELL", "php-fpm -t || exit 1"]
       interval: 30s
@@ -34,13 +32,21 @@ services:
         condition: service_healthy
     volumes:
       - wordpress_data:/var/www/html # perchè quel path??
-    restart:  always
+    secrets:
+      - db_wordpress_password # per utente / per connettersi al database
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
+      WORDPRESS_DB_NAME: wordpress
+
+    restart: unless-stopped
 
   mariadb:
-    container_name:  mariadb
-    build:  ./requirments/mariadb
+    container_name: mariadb
+    build: ./requirments/mariadb
     networks:
-      -  inception
+      - inception
     volumes:
       - mariadb_data:/var/lib/mysql # perchè quel path??
     healthcheck:
@@ -49,7 +55,15 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s 
-    restart:  always
+    secrets:
+      - db_root_password
+      - db_wordpress_password # Per creare l'utente
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD_FILE: /run/secrets/db_wordpress_password
+    restart: unless-stopped
 
 # volumi condivisi 
 volumes:
@@ -66,7 +80,9 @@ networks:
 
 secrets:
   db_root_password:
-    file:  ./secrets/db_root_password.txt
+    file: ./secrets/db_root_password.txt
+  db_wordpress_password:
+    file: ./secrets/db_wordpress_password.txt
 
 
 
