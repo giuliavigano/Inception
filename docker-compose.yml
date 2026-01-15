@@ -16,7 +16,7 @@ services:
     networks:
       - inception
     volumes:
-      - wordpress_data:/var/www/html # condiviso con wordpress ?
+      - wordpress_data:/var/www/html:ro # condiviso con wordpress, read-only per nginx
     depends_on:
       wordpress:
         condition: service_healthy
@@ -60,7 +60,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s 
+      start_period: 30s
     secrets:
       - db_root_password
       - db_wordpress_password # Per creare l'utente
@@ -71,21 +71,27 @@ services:
       MYSQL_PASSWORD_FILE: /run/secrets/db_wordpress_password
     restart: unless-stopped
 
-# volumi condivisi 
+# volumi condivisi
+# Driver: Default: local = salva i dati sul disco locale dell'host !!
+
 volumes:
   wordpress_data:
-# Driver: Default: local = salva i dati sul disco locale dell'host !!
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gvigano/data/wordpress # DEVI CREARE LA CARTELLA IN /HOME/GVIGANO ... !!
   mariadb_data:
-    driver: local 
-# Docker salva i volumi qui:
-# /var/lib/docker/volumes/inception_wordpress_data/_data/
-# /var/lib/docker/volumes/inception_mariadb_data/_data/
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gvigano/data/mariadb
 
 # rete docker interna in i 3 container (nginx, mariadb, wordpress) comunicano tra loro
 networks:
     inception:
-      name:  inception
+      name: inception
 
 secrets:
   db_root_password:
