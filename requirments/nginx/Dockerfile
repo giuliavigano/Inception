@@ -3,7 +3,8 @@ FROM
 RUN
 COPY
 EXPOSE 443 80
-CMD  ["nginx", "-g", "daemon off;"] 
+# esecuzione diretta senza shell intermendia con CMD -->
+CMD  ["nginx", "-g", "daemon off;"]
 # daemon off --> processo volutamente in foreground
 
 

@@ -7,13 +7,19 @@ services:
     ports:
       - "443:443"
       - "80:80"
+    healthcheck:
+      test: ["CMD-SHELL", ] # come lo testo ?
+      intervals: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - inception
+    volumes:
+      - wordpress_data:/var/www/html # condiviso con wordpress ?
     depends_on:
       wordpress:
         condition: service_healthy
-    volumes:
-      - wordpress_data:/var/www/html # condiviso con wordpress ?
     restart: unless-stopped
 		
   wordpress:
@@ -68,10 +74,13 @@ services:
 # volumi condivisi 
 volumes:
   wordpress_data:
-# Driver: Default: local ??
+# Driver: Default: local = salva i dati sul disco locale dell'host !!
     driver: local
   mariadb_data:
     driver: local 
+# Docker salva i volumi qui:
+# /var/lib/docker/volumes/inception_wordpress_data/_data/
+# /var/lib/docker/volumes/inception_mariadb_data/_data/
 
 # rete docker interna in i 3 container (nginx, mariadb, wordpress) comunicano tra loro
 networks:
@@ -85,7 +94,15 @@ secrets:
     file: ./secrets/db_wordpress_password.txt
 
 
+#mariadb:
+  #secrets:
+  #  - db_root_password
+  #environment: 
+  # MUSQL_ROOT_PASSWORD: /run/secrets/db_root_password
 
+  # --> Usi il path del secret come variabile d'ambiente,
+  # ma il valore rimane isolato in un file temporaneo in RAM 
+  # accessibile solo con i permessi giusti, e che scompare quando il container si ferma.
 
 # Verifica funzionamento corrente di un container:
 
