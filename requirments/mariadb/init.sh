@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec $@
+exec $@ # che sarebbe mysqld di CMD ["mysqld"]
 
 # Responsabilità dello script:
 
