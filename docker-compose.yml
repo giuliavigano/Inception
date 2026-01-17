@@ -45,7 +45,7 @@ services:
     environment:
       WORDPRESS_DB_HOST: mariadb:3306
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD_FILE_USER1: /run/secrets/db_wordpress_password
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
       WORDPRESS_DB_NAME: wordpress
       
       DOMAIN_NAME: gvigano.42.fr

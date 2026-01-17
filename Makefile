@@ -2,6 +2,9 @@ setup:
 	mkdir -p /home/gvigano/data/mariadb
 	mkdir -p /home/gvigano/data/wordpress
 
+# e dove fai il build dei servizi con ("docker build" o "docker-compose up --build")
+# ?????
+
 up: setup
 	docker-compose up -d
 
