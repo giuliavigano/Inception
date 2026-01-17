@@ -12,6 +12,7 @@ CMD  ["nginx", "-g", "daemon off;"]
 FROM
 RUN
 COPY
+EXPOSE 443 80
 COPY  /configure.sh
 RUN  chmod +x /configure.sh
 ENTRYPOINT  ["/configure.sh"]

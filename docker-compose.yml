@@ -39,13 +39,20 @@ services:
     volumes:
       - wordpress_data:/var/www/html # perchè quel path??
     secrets:
-      - db_wordpress_password # per utente / per connettersi al database
+      - db_wordpress_password
+      - wp_admin_password
+      - wp_user2_password # per connettersi al database wordpress / per connessione --> crea tabella utenti
     environment:
       WORDPRESS_DB_HOST: mariadb:3306
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
+      WORDPRESS_DB_PASSWORD_FILE_USER1: /run/secrets/db_wordpress_password
       WORDPRESS_DB_NAME: wordpress
-
+      
+      DOMAIN_NAME: gvigano.42.fr
+      WP_ADMIN_USER: gvigano
+      WP_ADMIN_EMAIL: gvigano@student.42.fr
+      WP_USER2: him
+      WP_USER2_EMAIL: him@example.com
     restart: unless-stopped
 
   mariadb:
@@ -98,6 +105,10 @@ secrets:
     file: ./secrets/db_root_password.txt
   db_wordpress_password:
     file: ./secrets/db_wordpress_password.txt
+  wp_admin_password:
+    file: ./secrets/wp_admin_password.txt
+  wp_user2_password:
+    file: ./secrets/wp_user2_password.txt
 
 
 #mariadb:
