@@ -1,4 +1,0 @@
-[mysqld]
-bind-address = 0.0.0.0 --> cosi accetta connessioni da tutti gli ip compreso Wordpress (container diverso ip diverso ?) e non solo da localhost 
-port = 3306
-datadir = /var/lib/mysql --> dove salvare i dati

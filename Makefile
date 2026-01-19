@@ -1,3 +1,10 @@
+# verifica che esistano i secrets!
+check-secrets:
+	@if [ ! -d ./secrets]; then \
+		chmod +x setup-secrets.sh \
+		./setup-secrets.sh; \
+	fi
+
 setup:
 	mkdir -p /home/gvigano/data/mariadb
 	mkdir -p /home/gvigano/data/wordpress
@@ -5,7 +12,7 @@ setup:
 # e dove fai il build dei servizi con ("docker build" o "docker-compose up --build")
 # ?????
 
-up: setup
+up: check-secrets setup
 	docker-compose up -d
 
 down:
@@ -16,10 +23,10 @@ clean:
 
 fclean:
 	docker-compose down -v -rmi all
-	rm -f /home/gvigano/data/mariadb
-	rm -f /home/gvigano/data/wordpress
+	sudo rm -rf /home/gvigano/data/mariadb
+	sudo rm -rf /home/gvigano/data/wordpress
 
 logs:
 	docker-compose logs -f
 
-.PHONY: setup up down clean fclean logs
+.PHONY: setup up check-secrets down clean fclean logs
