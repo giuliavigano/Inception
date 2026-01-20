@@ -8,7 +8,7 @@ services:
       - "443:443"
       - "80:80"
     healthcheck:
-      test: ["CMD-SHELL", "curl -fk https://localhost:443 || exit 1" ] # come lo testo ?
+      test: ["CMD-SHELL", "curl -fk https://localhost:443 || exit 1" ]
       intervals: 30s
       timeout: 10s
       retries: 3
@@ -37,15 +37,15 @@ services:
       mariadb:
         condition: service_healthy
     volumes:
-      - wordpress_data:/var/www/html # perchè quel path??
+      - wordpress_data:/var/www/html
     secrets:
       - db_wordpress_password
       - wp_admin_password
-      - wp_user2_password # per connettersi al database wordpress / per connessione --> crea tabella utenti
+      - wp_user2_password
     environment:
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD_FILE: ${WORDPRESS_DB_PASSWORD_FILE}
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       
       DOMAIN_NAME: ${DOMAIN_NAME}
@@ -61,21 +61,21 @@ services:
     networks:
       - inception
     volumes:
-      - mariadb_data:/var/lib/mysql # perchè quel path??
+      - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmi ping -h localhost -u root -p$$(cat /run/secrets/db_root_password) --silent || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     secrets:
       - db_root_password
-      - db_wordpress_password # Per creare l'utente
+      - db_wordpress_password
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: ${MYSQL_ROOT_PASSWORD_FILE}
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD_FILE: ${MYSQL_PASSWORD_FILE}
+      MYSQL_PASSWORD_FILE: /run/secrets/db_wordpress_password
     restart: unless-stopped
 
 # volumi condivisi
