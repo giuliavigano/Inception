@@ -1,27 +1,27 @@
 version: '3.8'
 
 services:
-  nginx:
-    container_name: nginx
-    build: ./requirements/nginx
-    ports:
-      - "443:443"
-      - "80:80"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fk https://localhost:443 || exit 1" ]
-      intervals: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    networks:
-      - inception
-    volumes:
-      - wordpress_data:/var/www/html:ro # condiviso con wordpress, read-only per nginx
-    depends_on:
-      wordpress:
-        condition: service_healthy
-    restart: unless-stopped
-		
+  # nginx:
+  #   container_name: nginx
+  #   build: ./requirements/nginx
+  #   ports:
+  #     - "443:443"
+  #     - "80:80"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -fk https://localhost:443 || exit 1" ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+  #   networks:
+  #     - inception
+  #   volumes:
+  #     - wordpress_data:/var/www/html:ro # condiviso con wordpress, read-only per nginx
+  #   depends_on:
+  #     wordpress:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
   wordpress:
     container_name: wordpress
     build: ./requirements/wordpress
@@ -47,7 +47,7 @@ services:
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-      
+
       DOMAIN_NAME: ${DOMAIN_NAME}
       WP_ADMIN_USER: ${WP_ADMIN_USER}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
@@ -63,7 +63,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmi ping -h localhost -u root -p$$(cat /run/secrets/db_root_password) --silent || exit 1"]
+      test: ["CMD", "mysqladmin ping -h localhost -u root -p$$(cat /run/secrets/db_root_password) --silent || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -109,58 +109,3 @@ secrets:
     file: ../secrets/wp_admin_password.txt
   wp_user2_password:
     file: ../secrets/wp_user2_password.txt
-
-
-#mariadb:
-  #secrets:
-  #  - db_root_password
-  #environment: 
-  # MUSQL_ROOT_PASSWORD: /run/secrets/db_root_password
-
-  # --> Usi il path del secret come variabile d'ambiente,
-  # ma il valore rimane isolato in un file temporaneo in RAM 
-  # accessibile solo con i permessi giusti, e che scompare quando il container si ferma.
-
-# Verifica funzionamento corrente di un container:
-
-#mariadb:
-#healthcheck:
-	#test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-
-# CMD : cosi da eseguire il comando direttamente senza shell
-# mysqladmin : tool di amministrazione MySQL/MariaDB --> INTERFACCIA COMMAND-LINE per operazioni amministrative --> NON richiede autenticazione per il comando ping
-# ping : Tenta di connettersi al server MySQL/MariaDB --> invia un "ping" al demone mysqld, se il server risponde con "pong" TUTTO OK!
-# -h localhost : indirizzo del server da pingare --> MariaDB è gia in ascolto su localhost e poi stiamo testando il server nello stesso container
-
-# MENTRE -->
-# test: ["CMD", "pgrep", "mysqld"] --> SBAGLIATO, controlla solo SE il processo mysqld è RUNNING.
-
-#wordpress:
-#healthcheck:
-      #test: ["CMD-SHELL", "php-fpm -t || exit 1"]
-
-# CMD-SHELL : comando eseguito sulla shell
-# php-fpm -t : legge il FILE di CONFIGURAZIONE di PHP-FPM
-
-# --> NON avvia il servizio, TESTA solo che PHP-FPM ACCETTI CONNESSIONI!
-
-
-
-# depends_on:   per specificare un ORDINE DI AVVIO 
-# --> aspetta solo che il container sia avviato NON che il servizio sia pronto
-
-#restart: # istuzioni su quando fare restart
-      # OPZIONI : 
-      # restart: "no" # NON riavviare mai
-      # restart: always # SEMPRE, anche dopo Reboot
-      # restart: on-failure # SOLO se CRASHA
-      # restart: unless-stopped # SEMPRE; TRANNE SE FERMATO MANUALMENTE
-
-# Variabili di ambiente -->
-# environment:
-	# DB_HOST: mariadb
-	# DB_NAME: wordpress
-
-# OPPURE -->
-# env_file:
-	# .env --> con dentro specificate tutte le variabili d'ambiente necessarie

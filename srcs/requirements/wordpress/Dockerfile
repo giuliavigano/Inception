@@ -9,7 +9,7 @@ RUN apt-get update && \
 		php-xml \
 		php-mbstring \
 		php-zip \
-		cutl \
+		curl \
 		wget \
 		unzip \
 		mariadb-client && \
@@ -22,10 +22,10 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     mv wp-cli.phar /usr/local/bin/wp
 
 # serve altro, indaga sui pacchetti necessari da scaricare e perchè 
-COPY /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY tools/setup-wp.sh /usr/local/bin/setup-wp.sh
+RUN chmod +x /usr/local/bin/setup-wp.sh
 EXPOSE 9000
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/setup-wp.sh"]
 CMD  ["php-fpm", "-F"]
 
 #php-mysql        # Connessione a MySQL/MariaDB

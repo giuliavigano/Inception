@@ -1,0 +1,52 @@
+#mariadb:
+  #secrets:
+  #  - db_root_password
+  #environment: 
+  # MUSQL_ROOT_PASSWORD: /run/secrets/db_root_password
+
+  # --> Usi il path del secret come variabile d'ambiente,
+  # ma il valore rimane isolato in un file temporaneo in RAM 
+  # accessibile solo con i permessi giusti, e che scompare quando il container si ferma.
+
+# Verifica funzionamento corrente di un container:
+
+#mariadb:
+#healthcheck:#test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+
+# CMD : cosi da eseguire il comando direttamente senza shell
+# mysqladmin : tool di amministrazione MySQL/MariaDB --> INTERFACCIA COMMAND-LINE per operazioni amministrative --> NON richiede autenticazione per il comando ping
+# ping : Tenta di connettersi al server MySQL/MariaDB --> invia un "ping" al demone mysqld, se il server risponde con "pong" TUTTO OK!
+# -h localhost : indirizzo del server da pingare --> MariaDB è gia in ascolto su localhost e poi stiamo testando il server nello stesso container
+
+# MENTRE -->
+# test: ["CMD", "pgrep", "mysqld"] --> SBAGLIATO, controlla solo SE il processo mysqld è RUNNING.
+
+#wordpress:
+#healthcheck:
+      #test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+
+# CMD-SHELL : comando eseguito sulla shell
+# php-fpm -t : legge il FILE di CONFIGURAZIONE di PHP-FPM
+
+# --> NON avvia il servizio, TESTA solo che PHP-FPM ACCETTI CONNESSIONI!
+
+
+
+# depends_on:   per specificare un ORDINE DI AVVIO 
+# --> aspetta solo che il container sia avviato NON che il servizio sia pronto
+
+#restart: # istuzioni su quando fare restart
+      # OPZIONI : 
+      # restart: "no" # NON riavviare mai
+      # restart: always # SEMPRE, anche dopo Reboot
+      # restart: on-failure # SOLO se CRASHA
+      # restart: unless-stopped # SEMPRE; TRANNE SE FERMATO MANUALMENTE
+
+# Variabili di ambiente -->
+# environment:
+	# DB_HOST: mariadb
+	# DB_NAME: wordpress
+
+# OPPURE -->
+# env_file:
+	# .env --> con dentro specificate tutte le variabili d'ambiente necessarie

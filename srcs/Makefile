@@ -6,14 +6,14 @@ check-secrets:
 	fi
 
 setup:
-	mkdir -p /home/gvigano/data/mariadb
-	mkdir -p /home/gvigano/data/wordpress
+	mkdir -p /home/giuliaviga/data/mariadb
+	mkdir -p /home/giuliaviga/data/wordpress
 
 # e dove fai il build dei servizi con ("docker build" o "docker-compose up --build")
 # ?????
 
 up: check-secrets setup
-	docker-compose up -d
+	docker-compose up --build
 
 down:
 	docker-compose down
