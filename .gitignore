@@ -1,3 +1,4 @@
 secrets/
+srcs/setup-secrets.sh
 srcs/.env
 *txt

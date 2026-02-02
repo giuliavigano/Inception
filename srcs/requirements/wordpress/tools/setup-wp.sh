@@ -58,6 +58,9 @@ if [ ! -f wp-config.php ]; then
 		--user_password="$USER2_PWD" \
 		--allow-root 
 	
+	unset DB_PWD
+	unset ADMIN_PWD
+	unset USER2_PWD
 fi
 
 exec "$@"

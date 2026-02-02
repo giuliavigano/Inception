@@ -28,7 +28,7 @@ services:
     networks:
       - inception
     healthcheck:
-      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      test: ["CMD-SHELL", "test -f /var/www/html/wp-config.php && pidof php-fpm || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -45,7 +45,6 @@ services:
     environment:
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
 
       DOMAIN_NAME: ${DOMAIN_NAME}
@@ -63,7 +62,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin ping -h localhost -u root -p$$(cat /run/secrets/db_root_password) --silent || exit 1"]
+      test: ["CMD", "mysqladmin ping -h localhost -u root --password=\"$(cat /run/secrets/db_root_password)\" --silent || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -72,10 +71,8 @@ services:
       - db_root_password
       - db_wordpress_password
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD_FILE: /run/secrets/db_wordpress_password
     restart: unless-stopped
 
 # volumi condivisi
@@ -109,3 +106,8 @@ secrets:
     file: ../secrets/wp_admin_password.txt
   wp_user2_password:
     file: ../secrets/wp_user2_password.txt
+
+
+#  WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_wordpress_password
+#  MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+#  MYSQL_PASSWORD_FILE: /run/secrets/db_wordpress_password

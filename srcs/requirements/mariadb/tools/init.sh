@@ -12,7 +12,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	temp_pid="$!"
 
 # Aspetta che MySQL sia pronto (PERCHE SCRITTO COSÌ E NON while ! mysqladmin ping --silent; do ... ???) 
-	for i in {30..0}; do
+	for i in {0..30}; do
 		if mysqladmin ping --silent 2>/dev/null; then
 			break
 		fi
@@ -27,6 +27,13 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	ROOT_PWD=$(cat /run/secrets/db_root_password)
 	WP_PWD=$(cat /run/secrets/db_wordpress_password)
 	
+	# Prima creo un utente per healthcheck ( solo privilegi ping, senza password )
+	mysql -u root  << EOF
+CREATE USER IF NOT EXIST 'healthcheck'@'localhost';
+GRANT USAGE ON *.* TO 'healthcheck'@'localhost';
+FLUSH PRIVILEGES;
+EOF
+
 	# Configura database e utenti 
 	# ( User='' toglie utenti anonimi che permettono connessioni senza autenticazione)
 	# PER UTENTE --> @'%' = puo connettersi da QUALSIASI host nella rete Docker
@@ -40,6 +47,14 @@ CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '$WP_PWD';
 GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
+
+	mysql -u root -p"$ROOT_PWD" << EOF
+DROP USER IF EXISTS 'root'@'localhost';
+DROP USER IF EXISTS 'root'@'127.0.0.1';
+DROP USER IF EXISTS 'root'@'::1';
+FLUSH PRIVILEGES;
+EOF
+
 	unset ROOT_PWD
 	unset WP_PWD
 	
