@@ -1,4 +1,3 @@
-# verifica che esistano i secrets!
 check-secrets:
 	@if [ ! -d ./secrets ]; then \
 		chmod +x setup-secrets.sh; \

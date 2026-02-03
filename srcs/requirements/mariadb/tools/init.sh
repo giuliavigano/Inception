@@ -11,7 +11,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	mysqld --user=mysql --skip-networking &
 	temp_pid="$!"
 
-# Aspetta che MySQL sia pronto (PERCHE SCRITTO COSÌ E NON while ! mysqladmin ping --silent; do ... ???) 
+# Aspetta che MySQL sia pronto
 	for i in {0..30}; do
 		if mysqladmin ping --silent 2>/dev/null; then
 			break
@@ -58,7 +58,7 @@ EOF
 	unset ROOT_PWD
 	unset WP_PWD
 	
-	# Chisura MySQL temporaneo --> PRIMA kill $temp_pid /n wait $temp_pid ??
+	# Chisura MySQL temporaneo
 	if ! kill -s TERM "$temp_pid" || ! wait "$temp_pid"; then
 		echo "Error, closure failure of MySQL"
 		exit 1
@@ -69,22 +69,4 @@ else
 	echo "Database già inizializzato, avvio MariaDB..."
 fi
 
-exec "$@" # che sarebbe mysqld di CMD ["mysqld"]
-
-
-# Responsabilità dello script:
-
-# Al primo avvio (database non inizializzato):
-
-# Inizializza MariaDB (mysql_install_db)
-# Avvia MariaDB temporaneamente
-# Leggi password dai secrets
-# Crea database wordpress
-# Crea utente wordpress con password
-# Dai privilegi all'utente
-# Ferma MariaDB temporaneo
-# Avvia MariaDB definitivo in foreground
-# Agli avvii successivi (database già esiste):
-
-# Skip inizializzazione (dati persistiti dal volume)
-# Avvia MariaDB direttamente in foreground
+exec "$@" 
