@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Controlla che mariadb sia funzionanate
-while ! mysqladmin ping -h"$WORDPRESS_DB_HOST" --silent; do
+while ! nc -z mariadb 3306 2>/dev/null; do
 		sleep 1
 done
 
@@ -55,7 +55,7 @@ if [ ! -f wp-config.php ]; then
 # Si esegue DOPO l'installazione perche si richiede che il Database WORDPRESS esista GIÀ
 	wp user create "$WP_USER2" "$WP_USER2_EMAIL" \
 		--role=author \
-		--user_password="$USER2_PWD" \
+		--user_pass="$USER2_PWD" \
 		--allow-root 
 	
 	unset DB_PWD

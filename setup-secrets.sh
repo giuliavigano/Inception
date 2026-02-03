@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SECRETS_DIR="../secrets"
+SECRETS_DIR="./secrets"
 mkdir -p $SECRETS_DIR
 
 if [ ! -f "$SECRETS_DIR/db_root_password.txt" ]; then

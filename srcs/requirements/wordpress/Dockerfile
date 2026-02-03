@@ -12,7 +12,8 @@ RUN apt-get update && \
 		curl \
 		wget \
 		unzip \
-		mariadb-client && \
+		mariadb-client \
+		netcat-openbsd && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -34,7 +35,7 @@ COPY tools/setup-wp.sh /usr/local/bin/setup-wp.sh
 RUN chmod +x /usr/local/bin/setup-wp.sh
 EXPOSE 9000
 ENTRYPOINT ["/usr/local/bin/setup-wp.sh"]
-CMD  ["php-fpm", "-F"]
+CMD  ["/usr/sbin/php-fpm7.4", "-F"]
 
 # ENTRYPOINT e CMD Insieme definiscono cosa Esegue il container
 # COMANDO FINALE = ENTRYPOINT + CMD

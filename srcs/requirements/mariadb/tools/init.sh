@@ -29,7 +29,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 	
 	# Prima creo un utente per healthcheck ( solo privilegi ping, senza password )
 	mysql -u root  << EOF
-CREATE USER IF NOT EXIST 'healthcheck'@'localhost';
+CREATE USER IF NOT EXISTS 'healthcheck'@'localhost';
 GRANT USAGE ON *.* TO 'healthcheck'@'localhost';
 FLUSH PRIVILEGES;
 EOF
