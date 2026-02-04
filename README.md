@@ -9,6 +9,7 @@ This project has been created as partof the 42 curriculum by gvigano
 - [Risorse](#-risorse-utilid)
 - [Note](#-note-tecniche)
 
+
 ## 🎯 Descrizione
 
 Inception è un progetto di system administration e infrastruttura Docker che implementa un ambiente LEMP (Linux, Nginx, MariaDB, PHP) completo utilizzando Docker Compose; con WordPress come applicazione web principale.
@@ -19,12 +20,14 @@ L'obiettivo è configurare una piccola infrastruttura composta da diversi serviz
 - L'intera infrastruttura deve essere orchestrata con Docker Compose
 - I dati devono persistere utilizzando volumi Docker
 
+
 ## 🏗️ Architettura
 
 Il progetto implementa una stack LEMP completa con i seguenti componenti:
 
 NGINX (Reverse Proxy) 		==>		WordPress + PHP-FPM 7.4		==>		MariaDB (Database Server )
 Porte: 80 (HTTP), 443 (HTTPS)			Porta: 9000 							Porta: 3306
+
 
 ## ⚙️ Installazione
 
@@ -128,7 +131,7 @@ Attendi che tutti i servizi si avviino (circa 1-2 minuti) e verifica:
    - Username: quello configurato in `WP_ADMIN_USER`
    - Password: contenuta in `secrets/wp_admin_password.txt`
 
-### Altri Comandi Utili
+### Altri comandi Make utili
 
 ```bash
 # Ferma i container senza rimuovere i volumi
@@ -145,18 +148,6 @@ make logs
 ```
 
 ## 🔧 Troubleshooting
-
-### Porte già in uso
-
-Se le porte 80 o 443 sono occupate:
-```bash
-# Controlla quali processi usano le porte
-sudo lsof -i :80
-sudo lsof -i :443
-
-# Ferma Apache o altri web server
-sudo systemctl stop apache2
-```
 
 ### Problemi di permessi
 
@@ -179,6 +170,7 @@ docker logs mariadb
 ### Reset completo
 
 Per ricominciare da zero:
+
 ```bash
 make fclean
 rm -rf secrets/

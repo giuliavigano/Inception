@@ -27,7 +27,8 @@ clean:
 	docker-compose --env-file srcs/.env down -v
 
 fclean:
-	-docker-compose --env-file srcs/.env down -v -rmi all 2>/dev/null || true
+	docker-compose --env-file srcs/.env stop
+	docker-compose --env-file srcs/.env down -v --rmi all
 	sudo rm -rf /home/giuliaviga/data/mariadb
 	sudo rm -rf /home/giuliaviga/data/wordpress
 
