@@ -20,7 +20,7 @@ services:
       - inception
     volumes:
       - type: bind
-        source: /home/giuliaviga/data/wordpress
+        source: /home/gvigano/data/wordpress
         target: /var/www/html
         read_only: true
     environment:
@@ -43,7 +43,7 @@ services:
         condition: service_healthy
     volumes:
       - type: bind
-        source: /home/giuliaviga/data/wordpress
+        source: /home/gvigano/data/wordpress
         target: /var/www/html
     secrets:
       - db_wordpress_password
@@ -68,7 +68,7 @@ services:
       - inception
     volumes:
       - type: bind
-        source: /home/giuliaviga/data/mariadb
+        source: /home/gvigano/data/mariadb
         target: /var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u healthcheck --silent || exit 1"]

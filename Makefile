@@ -5,16 +5,16 @@ check-secrets:
 	fi
 
 setup:
-	sudo rm -rf /home/giuliaviga/data/mariadb
-	sudo rm -rf /home/giuliaviga/data/wordpress
-	mkdir -p /home/giuliaviga/data/mariadb
-	mkdir -p /home/giuliaviga/data/wordpress
+	sudo rm -rf /home/gvigano/data/mariadb
+	sudo rm -rf /home/gvigano/data/wordpress
+	mkdir -p /home/gvigano/data/mariadb
+	mkdir -p /home/gvigano/data/wordpress
 
-	sudo chown -R 999:999 /home/giuliaviga/data/mariadb
-	sudo chown -R 33:33 /home/giuliaviga/data/wordpress
+	sudo chown -R 999:999 /home/gvigano/data/mariadb
+	sudo chown -R 33:33 /home/gvigano/data/wordpress
 
-	sudo chmod 755 /home/giuliaviga/data/mariadb
-	sudo chmod 755 /home/giuliaviga/data/wordpress
+	sudo chmod 755 /home/gvigano/data/mariadb
+	sudo chmod 755 /home/gvigano/data/wordpress
 
 
 up: check-secrets setup
@@ -29,8 +29,8 @@ clean:
 fclean:
 	docker-compose --env-file srcs/.env stop
 	docker-compose --env-file srcs/.env down -v --rmi all
-	sudo rm -rf /home/giuliaviga/data/mariadb
-	sudo rm -rf /home/giuliaviga/data/wordpress
+	sudo rm -rf /home/gvigano/data/mariadb
+	sudo rm -rf /home/gvigano/data/wordpress
 
 logs:
 	docker-compose --env-file srcs/.env logs -f

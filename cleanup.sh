@@ -14,9 +14,9 @@ docker rmi srcs_wordpress 2>/dev/null || true
 docker images | grep -E "inception|srcs"
 docker network rm inception 2>/dev/null || true
 docker network ls | grep inception
-sudo rm -rf /home/giuliaviga/data/mariadb
-sudo rm -rf /home/giuliaviga/data/wordpress
-ls -la /home/giuliaviga/data/
+sudo rm -rf /home/gvigano/data/mariadb
+sudo rm -rf /home/gvigano/data/wordpress
+ls -la /home/gvigano/data/
 docker system prune -a --volumes -f
 
 echo "=== Verifica Container ==="
@@ -32,7 +32,7 @@ echo "=== Verifica Rete ==="
 docker network ls | grep inception || echo "✓ Nessuna rete"
 
 echo "=== Verifica Directory ==="
-ls -la /home/giuliaviga/data/mariadb 2>/dev/null || echo "✓ Directory non esistente"
+ls -la /home/gvigano/data/mariadb 2>/dev/null || echo "✓ Directory non esistente"
 
 echo "=== Verifica Directory ==="
-ls -la /home/giuliaviga/data/wordpress 2>/dev/null || echo "✓ Directory non esistente"
+ls -la /home/gvigano/data/wordpress 2>/dev/null || echo "✓ Directory non esistente"
