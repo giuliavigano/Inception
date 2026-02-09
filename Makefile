@@ -18,21 +18,21 @@ setup:
 
 
 up: check-secrets setup
-	docker-compose --env-file srcs/.env up --build --force-recreate
+	docker compose --env-file srcs/.env up --build --force-recreate
 
 down:
-	docker-compose --env-file srcs/.env down
+	docker compose --env-file srcs/.env down
 
 clean:
-	docker-compose --env-file srcs/.env down -v
+	docker compose --env-file srcs/.env down -v
 
 fclean:
-	docker-compose --env-file srcs/.env stop
-	docker-compose --env-file srcs/.env down -v --rmi all
+	docker compose --env-file srcs/.env stop
+	docker compose --env-file srcs/.env down -v --rmi all
 	sudo rm -rf /home/gvigano/data/mariadb
 	sudo rm -rf /home/gvigano/data/wordpress
 
 logs:
-	docker-compose --env-file srcs/.env logs -f
+	docker compose --env-file srcs/.env logs -f
 
 .PHONY: setup up check-secrets down clean fclean logs

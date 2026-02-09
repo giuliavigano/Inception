@@ -4,10 +4,10 @@
 
 - [Descrizione](#-descrizione)
 - [Architettura](#️-architettura)
-- [Installazione](#️-installazione)
+- [Instructions](#️-instructions)
 - [Troubleshooting](#-troubleshooting)
-- [Note](#-note-tecniche)
-- [Design Choices]
+- [Project Description](#design-choices)
+- [Note Tecniche](#-note-tecniche)
 - [Risorse](#-risorse-utilid)
 
 ## 🎯 Descrizione
@@ -24,7 +24,6 @@ L'obiettivo è configurare una piccola infrastruttura composta da diversi serviz
  - Your containers have to restart in case of a crash
 
 E queste regole specifiche:
-- Ogni servizio deve girare in un container Docker dedicato
 - I container devono essere costruiti da immagini Docker personalizzate, implementate e non scaricate
 - L'intera infrastruttura deve essere orchestrata con Docker Compose
 - I dati devono persistere utilizzando volumi Docker
@@ -36,7 +35,7 @@ Il progetto implementa una stack LEMP completa con i seguenti componenti:
 NGINX (Reverse Proxy) 		==>		WordPress + PHP-FPM 7.4		==>		MariaDB (Database Server)
 Porte: 80 (HTTP), 443 (HTTPS)			Porta: 9000 							Porta: 3306
 
-## ⚙️ Installazione
+## ⚙️ Instructions
 
 ### Prerequisiti
 
@@ -46,9 +45,9 @@ Prima di iniziare, assicurati di avere installato:
   ```bash
   docker --version
   ```
-- **Docker Compose** (versione 1.29 o superiore)
+- **Docker Compose** (Docker Compose version v2.24.5)
   ```bash
-  docker-compose --version
+  docker compose --version
   ```
 - **Make** (per utilizzare il Makefile)
   ```bash
@@ -212,38 +211,7 @@ rm -rf secrets/
 make up
 ```
 
-## 📝 Note Tecniche
-
-Questo progetto è stato sviluppato come parte del curriculum di 42.
-
-### Caratteristiche Implementate
-
-- **Immagini Docker personalizzate**: I container utilizzano Debian Bullseye solo come immagine base
-- **Sicurezza**: 
-  - Certificati SSL self-signed generati automaticamente
-  - Password gestite tramite Docker secrets e generate randomicamente con openssl, nessuna password hardcoded nel codice
-- **Orchestrazione**: I servizi si avviano in modo sequenziale grazie agli health checks e depend_on (prima mariadb poi wordpress e infine Nginx)
-- **Persistenza**: I dati di WordPress e MariaDB sono persistenti tramite volumi
-- **Best practices**: 
-  - Isolamento dei servizi: ogni container esegue un singolo processo principale
-  - Gestione PID 1: i processi principali (nginx, php-fpm, mysqld) vengono eseguiti in foreground come PID 1 per gestire correttamente i segnali di sistema (SIGTERM, SIGINT)
-  - Restart policy `unless-stopped`: i container si riavviano automaticamente in caso di crash ma possono essere fermati manualmente
-  - Network isolation: comunicazione tra container tramite rete dedicata `inception`
-
-### Struttura dei Volumi
-
-- `/home/tuologin/data/wordpress` → Contiene i file di WordPress (wp-content, themes, plugins) condivisi anche con Nginx in :ro per reverse proxy
-- `/home/tuologin/data/mariadb` → Contiene il database MariaDB
-
-### Secrets Generati
-
-I secrets sono generati automaticamente con OpenSSL e salvati in `secrets/`:
-- `db_root_password.txt` → Password root di MariaDB
-- `db_wordpress_password.txt` → Password utente WordPress del database
-- `wp_admin_password.txt` → Password amministratore WordPress
-- `wp_user2_password.txt` → Password secondo utente WordPress
-
-## 🔈Design Choices
+## 🔈Project Description
 
 ### Virtual Machine Vs Docker
 - **Virtual Machine**: Ha RAM, disco, OS dedicati --> include un intero OS guest + hypervisor (PESANTE, GB di RAM, minuti per boot)
@@ -299,6 +267,37 @@ I secrets sono generati automaticamente con OpenSSL e salvati in `secrets/`:
 	- *Problema*: dipendenza dal filesystem dell'host
 
 **Bind Mounts** richiesto per questo progetto 
+
+## 📝 Note Tecniche
+
+Questo progetto è stato sviluppato come parte del curriculum di 42.
+
+### Caratteristiche Implementate
+
+- **Immagini Docker personalizzate**: I container utilizzano Debian Bullseye solo come immagine base
+- **Sicurezza**: 
+  - Certificati SSL self-signed generati automaticamente
+  - Password gestite tramite Docker secrets e generate randomicamente con openssl, nessuna password hardcoded nel codice
+- **Orchestrazione**: I servizi si avviano in modo sequenziale grazie agli health checks e depend_on (prima mariadb poi wordpress e infine Nginx)
+- **Persistenza**: I dati di WordPress e MariaDB sono persistenti tramite volumi
+- **Best practices**: 
+  - Isolamento dei servizi: ogni container esegue un singolo processo principale
+  - Gestione PID 1: i processi principali (nginx, php-fpm, mysqld) vengono eseguiti in foreground come PID 1 per gestire correttamente i segnali di sistema (SIGTERM, SIGINT)
+  - Restart policy `unless-stopped`: i container si riavviano automaticamente in caso di crash ma possono essere fermati manualmente
+  - Network isolation: comunicazione tra container tramite rete dedicata `inception`
+
+### Struttura dei Volumi
+
+- `/home/tuologin/data/wordpress` → Contiene i file di WordPress (wp-content, themes, plugins) condivisi anche con Nginx in :ro per reverse proxy
+- `/home/tuologin/data/mariadb` → Contiene il database MariaDB
+
+### Secrets Generati
+
+I secrets sono generati automaticamente e randomicamente con OpenSSL e salvati in `secrets/`:
+- `db_root_password.txt` → Password root di MariaDB
+- `db_wordpress_password.txt` → Password utente WordPress del database
+- `wp_admin_password.txt` → Password amministratore WordPress
+- `wp_user2_password.txt` → Password secondo utente WordPress
 
 ## 📚 Risorse Utili
 
