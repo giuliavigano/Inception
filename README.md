@@ -1,19 +1,18 @@
 *This project has been created as part of the 42 curriculum by gvigano*
 
-## 📋 Indice
+## 📋 Table of Contents
 
-- [Descrizione](#-descrizione)
-- [Architettura](#️-architettura)
-- [Instructions](#️-instructions)
-- [Troubleshooting](#-troubleshooting)
-- [Project Description](#design-choices)
-- [Note Tecniche](#-note-tecniche)
-- [Risorse](#-risorse-utilid)
+- [Description](#-description)
+- [Architecture](#️-architecture)
+- [Instructions](#instructions)
+- [Project Description](#project-description)
+- [Technical Notes](#-technical-notes)
+- [Useful Resources](#-useful-resources)
 
-## 🎯 Descrizione
+## 🎯 Description
 
-Inception è un progetto di system administration e infrastruttura Docker che implementa un ambiente LEMP (Linux, Nginx, MariaDB, PHP) completo utilizzando Docker Compose; con WordPress come applicazione web principale.
-L'obiettivo è configurare una piccola infrastruttura composta da diversi servizi seguendo queste richieste:
+Inception is a system administration and Docker infrastructure project that implements a complete LEMP environment (Linux, Nginx, MariaDB, PHP) using Docker Compose; with WordPress as the main web application.
+The goal is to configure a small infrastructure composed of different services following these requirements:
 
  - A Docker container that contains NGINX with TLSv1.2 or TLSv1.3 only.
  - A Docker container that contains WordPress + php-fpm (it must be installed and configured) only, without nginx.
@@ -23,283 +22,125 @@ L'obiettivo è configurare una piccola infrastruttura composta da diversi serviz
  - A docker-network that establishes the connection between your containers.
  - Your containers have to restart in case of a crash
 
-E queste regole specifiche:
-- I container devono essere costruiti da immagini Docker personalizzate, implementate e non scaricate
-- L'intera infrastruttura deve essere orchestrata con Docker Compose
-- I dati devono persistere utilizzando volumi Docker
+And these ***specific rules***:
+- Containers must be built from custom Docker images, implemented and not downloaded
+- The entire infrastructure must be orchestrated with Docker Compose
+- Data must persist using Docker volumes
 
-## 🏗️ Architettura
+## 🏗️ Architecture
 
-Il progetto implementa una stack LEMP completa con i seguenti componenti:
+The project implements a complete LEMP stack with the following components:
 
 NGINX (Reverse Proxy) 		==>		WordPress + PHP-FPM 7.4		==>		MariaDB (Database Server)
-Porte: 80 (HTTP), 443 (HTTPS)			Porta: 9000 							Porta: 3306
+Ports: 80 (HTTP), 443 (HTTPS)			Port: 9000 							Port: 3306
 
-## ⚙️ Instructions
-
-### Prerequisiti
-
-Prima di iniziare, assicurati di avere installato:
-
-- **Docker** (versione 20.10 o superiore)
-  ```bash
-  docker --version
-  ```
-- **Docker Compose** (Docker Compose version v2.24.5)
-  ```bash
-  docker compose --version
-  ```
-- **Make** (per utilizzare il Makefile)
-  ```bash
-  make --version
-  ```
-- **OpenSSL** (per generare i secrets)
-  ```bash
-  openssl version
-  ```
-
-### 1. Clona la repository
+## Instructions
 
 ```bash
-git clone <repository-url>
+# 1. Clone the repo
+git clone <repo>
 cd inception
-```
 
-### 2. Personalizza la configurazione
+# 2. Customize configuration (see DEV_DOC.md)
+vim srcs/.env	# Set your login instead of 'gvigano'
+vim Makefile	# Adjust volume paths in 'setup:' and 'fclean'
 
-Modifica il file `srcs/.env` con i tuoi dati:
+# 3. Start
+make
 
-```bash
-# Sostituisci 'gvigano' con il tuo login
-DOMAIN_NAME=tuologin.42.fr
-
-WP_ADMIN_USER=tuologin
-WP_ADMIN_EMAIL=tuologin@student.42.fr
-
-# Sostituisci anche i percorsi dei volumi
-WP_DATA_PATH=/home/tuologin/data/wordpress
-DB_DATA_PATH=/home/tuologin/data/mariadb
-```
-
-```bash
-# Sostituisci 'gvigano' con il tuo login in questi comandi nel Makefile
-setup:
-	sudo rm -rf /home/tuologin/data/mariadb
-	sudo rm -rf /home/tuologin/data/wordpress
-	mkdir -p /home/tuologin/data/mariadb
-	mkdir -p /home/tuologin/data/wordpress
-
-	sudo chown -R 999:999 /home/tuologin/data/mariadb
-	sudo chown -R 33:33 /home/tuologin/data/wordpress
-
-	sudo chmod 755 /home/tuologin/data/mariadb
-	sudo chmod 755 /home/tuologin/data/wordpress
-
-fclean:
-	docker-compose --env-file srcs/.env stop
-	docker-compose --env-file srcs/.env down -v --rmi all
-	sudo rm -rf /home/tuologin/data/mariadb
-	sudo rm -rf /home/tuologin/data/wordpress
-```
-
-```bash
-# Sostituisci il domain name all'interno del file setup-ssl.sh con il tuo in questa riga di codice
--subj "/C=IT/ST=Lazio/L=Roma/O=42/CN=gvigano.42.fr"
-```
-
-> ⚠️ **Importante**: Le uniche modifiche necessarie sono il domain name, l'admin user/email e i percorsi dei volumi con il tuo username.
-
-### 3. Configura il file hosts
-
-Aggiungi il dominio al file `/etc/hosts` per testare localmente:
-
-```bash
-echo "127.0.0.1 tuologin.42.fr" | sudo tee -a /etc/hosts
-```
-
-Questo comando mappa il dominio `tuologin.42.fr` all'indirizzo locale `127.0.0.1`, permettendo al browser di risolvere il dominio senza DNS pubblico.
-
-### 4. Controlla secrets
-
-I secrets vengono gestiti automaticamente dal Makefile tramite lo script 'setup-secrets.sh'.
-Assicurati che lo script sia eseguibile:
-
-```bash
-chmod +x setup-secrets.sh
-```
-
-### 5. Avvia l'infrastruttura
-
-```bash
-make up
-```
-
-Questo comando:
-- Genera automaticamente i secrets se non esistono
-- Crea le directory per i volumi
-- Configura i permessi corretti
-- Avvia tutti i container con Docker Compose
-
-### 6. Verifica l'installazione
-
-Attendi che tutti i servizi si avviino (circa 1-2 minuti) e verifica:
-
-1. **Controlla lo stato dei container:**
-   ```bash
-   docker ps
-   ```
-   Dovresti vedere 3 container in esecuzione e con stato (healthy): `nginx`, `wordpress`, `mariadb`
-
-2. **Visualizza i logs:**
-   ```bash
-   make logs
-   ```
-
-3. **Accedi al sito WordPress:**
-   - Apri il browser e vai su: `https://tuologin.42.fr`
-   - Accetta il certificato SSL self-signed
-   - Dovresti vedere la homepage di WordPress
-
-4. **Accedi alla dashboard admin:**
-   - URL: `https://tuologin.42.fr/wp-admin`
-   - Username: quello configurato in `WP_ADMIN_USER`
-   - Password: contenuta in `secrets/wp_admin_password.txt`
-
-### Altri comandi Make utili
-
-```bash
-# Ferma i container senza rimuovere i volumi
-make down
-
-# Ferma i container e rimuove i volumi
-make clean
-
-# Rimuove tutto (container, volumi, immagini)
-make fclean
-
-# Visualizza i logs in tempo reale
-make logs
-```
-
-## 🔧 Troubleshooting
-
-### Problemi di permessi
-
-Se riscontri errori di permessi sui volumi:
-```bash
-# Riavvia con make fclean e poi make up
-make fclean
-make up
-```
-
-### I container non si avviano
-
-```bash
-# Controlla i logs per vedere gli errori
-docker logs nginx
-docker logs wordpress
-docker logs mariadb
-```
-
-### Reset completo
-
-Per ricominciare da zero:
-
-```bash
-make fclean
-rm -rf secrets/
-make up
+# 4. Open browser with the login you modified in the configuration
+https://yours_login.42.fr
 ```
 
 ## 🔈Project Description
 
 ### Virtual Machine Vs Docker
-- **Virtual Machine**: Ha RAM, disco, OS dedicati --> include un intero OS guest + hypervisor (PESANTE, GB di RAM, minuti per boot)
+- **Virtual Machine**: Has dedicated RAM, disk, OS --> includes an entire guest OS + hypervisor (HEAVY, GB of RAM, minutes to boot)
 
-- **Docker**: Conidivide il Kernel Linux dell'host --> include solo l'applicazione e le sue dipendenze (MB, secondi per l'avvio)
+- **Docker**: Shares the Linux Kernel of the host --> includes only the application and its dependencies (MB, seconds to start)
 
-- **Isolamento**: VM = isolamento hardware completo (molto sicuro), Docker = isolamento a livello di processo
+- **Isolation**: VM = complete hardware isolation (very secure), Docker = process-level isolation
 
-- **Portabilità**: Docker Container sono portabili
+- **Portability**: Docker Containers are portable
 
-- **Quando usa l'uno o l'altro**: VM per isolamento totale/sicurezza critica, Docker per microservizi/sviluppo/deployment rapido
+- **When to use one or the other**: VM for total isolation/critical security, Docker for microservices/development/rapid deployment
 
 ### Secrets Vs Environment Variables
 - **Secrets**:
-	- Montati come file in /run/secrets/<secret_name>, temporary files in RAM cancellati allo stop.
-	- Non appaiono in docker history
-	- Solo container autoizzati vi hanno accesso
+	- Mounted as files in /run/secrets/<secret_name>, temporary files in RAM deleted on stop.
+	- Don't appear in docker history
+	- Only authorized containers have access
 
 - **Env vars**:
-	- Visisbili con 'docker inspect'
-	- Salvate nel layer dell'immagine
-	- Visibili nei log (se stampate)
-	- Appaiono in docker history
-	- Vi ha accesso chiunque abbia accesso al container
+	- Visible with 'docker inspect'
+	- Saved in image layer
+	- Visible in logs (if printed)
+	- Appear in docker history
+	- Anyone with container access has access
 
 **Best Practice**:
-- Secrets per password/chiavi API
-- Env vars per configurazioni non sensibili
+- Secrets for passwords/API keys
+- Env vars for non-sensitive configurations
 
 ### Docker Network Vs Host Network
 - **Docker Network**:
-	- Rete isolata con subnet privato
-	- DNS interno automatico (risolve nomi servizi)
-	- Porte non esposte all'host, solo esplicitamente nel caso
-	- **sicurezza** Container non raggiungibili dall'esterno
+	- Isolated network with private subnet
+	- Automatic internal DNS (resolves service names)
+	- Ports not exposed to host, only explicitly if needed
+	- **security** Containers not reachable from outside
 
 - **Host Network**:
-	- Container usa direttamente la rete dell'host
-	- Performance migliori ma **zero isolamento**
+	- Container uses host network directly
+	- Better performance but **zero isolation**
 
-**Docker Network** per: isolamento, gestione DNS, possibilità di avere piu reti separate
+**Docker Network** for: isolation, DNS management, ability to have multiple separate networks
 
 ### Docker Volumes Vs Bind Mounts
 - **Docker Volumes**:
-	- Creati da Docker in /var/lib/docker/volumes/
-	- Gestiti completamente da Docker
-	- Comandi disponibili: *docker volume create*, *docker volume ls*, *docker volume rm*
-	- Non devi preoccuparti di permessi/ownership
+	- Created by Docker in /var/lib/docker/volumes/
+	- Completely managed by Docker
+	- Available commands: *docker volume create*, *docker volume ls*, *docker volume rm*
+	- You don't have to worry about permissions/ownership
 - **Bind Mounts**:
-	- *Path assoluto* dell'host montato nel container
-	- Devi gestire tu: permessi/ownership/backup
-	- Utile per sviluppo, modifihe immediate
-	- *Problema*: dipendenza dal filesystem dell'host
+	- *Absolute path* of host mounted in container
+	- You manage: permissions/ownership/backup
+	- Useful for development, immediate changes
+	- *Problem*: dependency on host filesystem
 
-**Bind Mounts** richiesto per questo progetto 
+**Bind Mounts** required for this project 
 
-## 📝 Note Tecniche
+## 📝 Technical Notes
 
-Questo progetto è stato sviluppato come parte del curriculum di 42.
+This project was developed as part of the 42 curriculum.
 
-### Caratteristiche Implementate
+### Implemented Features
 
-- **Immagini Docker personalizzate**: I container utilizzano Debian Bullseye solo come immagine base
-- **Sicurezza**: 
-  - Certificati SSL self-signed generati automaticamente
-  - Password gestite tramite Docker secrets e generate randomicamente con openssl, nessuna password hardcoded nel codice
-- **Orchestrazione**: I servizi si avviano in modo sequenziale grazie agli health checks e depend_on (prima mariadb poi wordpress e infine Nginx)
-- **Persistenza**: I dati di WordPress e MariaDB sono persistenti tramite volumi
+- **Custom Docker images**: Containers use Debian Bullseye only as base image
+- **Security**: 
+  - Automatically generated self-signed SSL certificates
+  - Passwords managed through Docker secrets and randomly generated with openssl, no hardcoded passwords in code
+- **Orchestration**: Services start sequentially thanks to health checks and depend_on (first mariadb then wordpress and finally Nginx)
+- **Persistence**: WordPress and MariaDB data is persistent through volumes
 - **Best practices**: 
-  - Isolamento dei servizi: ogni container esegue un singolo processo principale
-  - Gestione PID 1: i processi principali (nginx, php-fpm, mysqld) vengono eseguiti in foreground come PID 1 per gestire correttamente i segnali di sistema (SIGTERM, SIGINT)
-  - Restart policy `unless-stopped`: i container si riavviano automaticamente in caso di crash ma possono essere fermati manualmente
-  - Network isolation: comunicazione tra container tramite rete dedicata `inception`
+  - Service isolation: each container runs a single main process
+  - PID 1 management: main processes (nginx, php-fpm, mysqld) are executed in foreground as PID 1 to properly handle system signals (SIGTERM, SIGINT)
+  - Restart policy `unless-stopped`: containers restart automatically in case of crash but can be stopped manually
+  - Network isolation: communication between containers through dedicated `inception` network
 
-### Struttura dei Volumi
+### Volume Structure
 
-- `/home/tuologin/data/wordpress` → Contiene i file di WordPress (wp-content, themes, plugins) condivisi anche con Nginx in :ro per reverse proxy
-- `/home/tuologin/data/mariadb` → Contiene il database MariaDB
+- `/home/yourlogin/data/wordpress` → Contains WordPress files (wp-content, themes, plugins) also shared with Nginx in :ro for reverse proxy
+- `/home/yourlogin/data/mariadb` → Contains MariaDB database
 
-### Secrets Generati
+### Generated Secrets
 
-I secrets sono generati automaticamente e randomicamente con OpenSSL e salvati in `secrets/`:
-- `db_root_password.txt` → Password root di MariaDB
-- `db_wordpress_password.txt` → Password utente WordPress del database
-- `wp_admin_password.txt` → Password amministratore WordPress
-- `wp_user2_password.txt` → Password secondo utente WordPress
+Secrets are automatically and randomly generated with OpenSSL and saved in `secrets/`:
+- `db_root_password.txt` → MariaDB root password
+- `db_wordpress_password.txt` → WordPress database user password
+- `wp_admin_password.txt` → WordPress administrator password
+- `wp_user2_password.txt` → Second WordPress user password
 
-## 📚 Risorse Utili
+## 📚 Useful Resources
 
 - [Docker Documentation](https://docs.docker.com/)
 - [Docker Video](https://www.youtube.com/watch?v=3c-iBn73dDE&t=117ss)
@@ -308,6 +149,6 @@ I secrets sono generati automaticamente e randomicamente con OpenSSL e salvati i
 - [MariaDB Documentation](https://mariadb.org/documentation/)
 - [NGINX Documentation](https://nginx.org/en/docs/)
 
-L'uso dell'AI (Claude Sonnet 4.5) in questo progetto si è limitato a domande teoriche, più che altro descrizione dei miei ragionamenti e collegamenti acquisiti e controllo della loro validità teorica (tenendo conto che più andavo avanti nello studio più scoprivo cose nuove ho preferito cercare in qualche modo di correggere i miei ragionamenti il prima possibile e passo passo, quando non avevo possibilità di farlo con un compagno/a a scuola). Per la validità mi è servito molto questionare anche i concetti teorici nuovi (o perlomeno la spiegazione fornita dall'AI), per una mia completa comprensione prima di lavorare sulla sua implementazione pratica.
+The use of AI (Claude Sonnet 4.5) in this project was limited to theoretical questions, mostly description of my reasoning and acquired connections and checking their theoretical validity (considering that the more I progressed in the study the more I discovered new things, I preferred to try to correct my reasoning as soon as possible and step by step, when I didn't have the possibility to do so with a classmate at school). For validity, it was very helpful to also question new theoretical concepts (or at least the explanation provided by AI), for my complete understanding before working on its practical implementation.
 
-L'uso dell'AI (Claude Sonnet 4.5) mi ha anche aiutato nell'implementazione di questo file per quanto riguarda la sintassi Markdown, ad esempio per formattare correttamente i blocchi di codice con syntax highlighting bash, quindi nello studio della corretta sintassi.
+The use of AI (Claude Sonnet 4.5) also helped me in implementing this file regarding Markdown syntax, for example to correctly format code blocks with bash syntax highlighting, thus in studying the correct syntax.

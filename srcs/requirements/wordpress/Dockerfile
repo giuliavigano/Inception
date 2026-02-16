@@ -16,21 +16,13 @@ RUN apt-get update && \
 		netcat-openbsd && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
-
-# ora devi installare WP_CURL --> tool da riga di comando per gestire Wordpress senza interfaccia web --> dispinibile come comando wp (usato nel .sh)
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
-
 RUN mkdir -p /var/www/html && \
 	chown -R www-data:www-data /var/www/html && \
 	chmod -R 755 /var/www/html
-# crea ma "document root standard" di Wordpress
-# da i permessi RICORSIVI a www-data ( PHP-FPM gira come utente www-data / cosi come Nginx)
-# 755 --> solo il propretario scrive 
 COPY conf/wordpress.conf /etc/php/7.4/fpm/pool.d/www.conf
-
-# serve altro, indaga sui pacchetti necessari da scaricare e perchè 
 COPY tools/setup-wp.sh /usr/local/bin/setup-wp.sh
 RUN chmod +x /usr/local/bin/setup-wp.sh
 EXPOSE 9000
@@ -42,19 +34,5 @@ CMD  ["/usr/sbin/php-fpm7.4", "-F"]
 # ENTRYPOINT = comando FISSO che viene SEMPRE Eseguito
 # CMD = Argomenti Predefiniti Ma SOSTITUIBILI 
 
-# I CMD si aggiungono al comando ENTRYPOINT e tutte le volte che vengono mandati possono essere comandi diversi 
 # CMD viene passato a set-up.sh ed eseguito con exec per non lascire il PID 1 a bash e darlo al PROCESSO php-fpm -F
 
-# =============== PACCHETTI ================
-
-#php-mysql        # Connessione a MySQL/MariaDB
-#php-mysqli       # Driver MySQL migliorato
-#php-curl         # Per scaricare cose da internet
-#php-gd           # Elaborazione immagini
-#php-xml          # Parsing XML
-#php-mbstring     # Gestione stringhe multibyte
-#php-zip          # Compressione/decompressione
-
-#curl o wget      # Per scaricare WordPress e WP-CLI
-#unzip            # Per decomprimere archivi
-#mariadb-client   # Tool mysql per testare connessione DB

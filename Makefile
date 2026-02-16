@@ -1,3 +1,5 @@
+all: up
+
 check-secrets:
 	@if [ ! -d ./secrets ]; then \
 		chmod +x setup-secrets.sh; \
@@ -18,7 +20,7 @@ setup:
 
 
 up: check-secrets setup
-	docker compose --env-file srcs/.env up --build --force-recreate
+	docker compose --env-file srcs/.env up --build -d
 
 down:
 	docker compose --env-file srcs/.env down
@@ -35,4 +37,6 @@ fclean:
 logs:
 	docker compose --env-file srcs/.env logs -f
 
-.PHONY: setup up check-secrets down clean fclean logs
+re: fclean up
+
+.PHONY: all re setup up check-secrets down clean fclean logs
