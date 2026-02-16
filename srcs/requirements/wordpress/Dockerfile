@@ -28,11 +28,3 @@ RUN chmod +x /usr/local/bin/setup-wp.sh
 EXPOSE 9000
 ENTRYPOINT ["/usr/local/bin/setup-wp.sh"]
 CMD  ["/usr/sbin/php-fpm7.4", "-F"]
-
-# ENTRYPOINT e CMD Insieme definiscono cosa Esegue il container
-# COMANDO FINALE = ENTRYPOINT + CMD
-# ENTRYPOINT = comando FISSO che viene SEMPRE Eseguito
-# CMD = Argomenti Predefiniti Ma SOSTITUIBILI 
-
-# CMD viene passato a set-up.sh ed eseguito con exec per non lascire il PID 1 a bash e darlo al PROCESSO php-fpm -F
-

@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# controllo se il database è già inizializzato oppure no:
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	echo "Database non ancora inizializzato"
 
-	# Inizializza mariadb
 	mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
-	# Avvia temporaneamente il server MariaDB / & mette in background 
 	mysqld --user=mysql --skip-networking &
 	temp_pid="$!"
 
-# Aspetta che MySQL sia pronto
 	for i in {0..30}; do
 		if mysqladmin ping --silent 2>/dev/null; then
 			break
@@ -23,21 +19,15 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 		exit 1;
 	fi
 
-	# Leggi secrets
 	ROOT_PWD=$(cat /run/secrets/db_root_password)
 	WP_PWD=$(cat /run/secrets/db_wordpress_password)
 	
-	# Prima creo un utente per healthcheck ( solo privilegi ping, senza password )
 	mysql -u root  << EOF
 CREATE USER IF NOT EXISTS 'healthcheck'@'localhost';
 GRANT USAGE ON *.* TO 'healthcheck'@'localhost';
 FLUSH PRIVILEGES;
 EOF
 
-	# Configura database e utenti 
-	# ( User='' toglie utenti anonimi che permettono connessioni senza autenticazione)
-	# PER UTENTE --> @'%' = puo connettersi da QUALSIASI host nella rete Docker
-	# PER ROOT NO PERCHÈ = admin solo INTERNO al container, USER wordrepress DEVE CONNETTERSI da container wordpress
 	mysql -u root << EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PWD';
 DELETE FROM mysql.user WHERE User='';
@@ -57,8 +47,7 @@ EOF
 
 	unset ROOT_PWD
 	unset WP_PWD
-	
-	# Chisura MySQL temporaneo
+
 	if ! kill -s TERM "$temp_pid" || ! wait "$temp_pid"; then
 		echo "Error, closure failure of MySQL"
 		exit 1
