@@ -18,9 +18,11 @@ setup:
 	sudo chmod 755 /home/gvigano/data/mariadb
 	sudo chmod 755 /home/gvigano/data/wordpress
 
+build: check-secrets
+	docker compose --env-file srcs/.env build
 
 up: check-secrets setup
-	docker compose --env-file srcs/.env up --build -d
+	docker compose --env-file srcs/.env up -d
 
 down:
 	docker compose --env-file srcs/.env down
@@ -39,4 +41,4 @@ logs:
 
 re: fclean up
 
-.PHONY: all re setup up check-secrets down clean fclean logs
+.PHONY: all re setup build up check-secrets down clean fclean logs
