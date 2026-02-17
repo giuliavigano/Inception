@@ -2,8 +2,8 @@ all: up
 
 check-secrets:
 	@if [ ! -d ./secrets ]; then \
-		chmod +x setup-secrets.sh; \
-		./setup-secrets.sh; \
+		chmod +x ./srcs/setup-secrets.sh; \
+		./srcs/setup-secrets.sh; \
 	fi
 
 setup:
