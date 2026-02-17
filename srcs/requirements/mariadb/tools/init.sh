@@ -38,13 +38,6 @@ GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
-	mysql -u root -p"$ROOT_PWD" << EOF
-DROP USER IF EXISTS 'root'@'localhost';
-DROP USER IF EXISTS 'root'@'127.0.0.1';
-DROP USER IF EXISTS 'root'@'::1';
-FLUSH PRIVILEGES;
-EOF
-
 	unset ROOT_PWD
 	unset WP_PWD
 
@@ -59,3 +52,11 @@ else
 fi
 
 exec "$@" 
+
+# FLUSH PRIVILEGES;
+# EOF
+
+# 	mysql -u root -p"$ROOT_PWD" << EOF
+# DROP USER IF EXISTS 'root'@'localhost';
+# DROP USER IF EXISTS 'root'@'127.0.0.1';
+# DROP USER IF EXISTS 'root'@'::1';
