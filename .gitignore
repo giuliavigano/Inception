@@ -1,4 +1,5 @@
+# Secrets and passwords
 secrets/
-srcs/setup-secrets.sh
+
+# Environment variables
 srcs/.env
-*txt
