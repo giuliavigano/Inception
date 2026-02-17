@@ -11,6 +11,6 @@ RUN chmod 700 /etc/nginx/ssl
 COPY /conf/nginx.conf /etc/nginx/nginx.conf
 COPY tools/setup-ssl.sh /usr/local/bin/setup-ssl.sh
 RUN  chmod +x /usr/local/bin/setup-ssl.sh
-EXPOSE 443 80
+EXPOSE 443
 ENTRYPOINT  ["/usr/local/bin/setup-ssl.sh"]
 CMD ["nginx", "-g", "daemon off;"]
