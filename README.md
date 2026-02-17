@@ -107,7 +107,7 @@ https://yours_login.42.fr
 	- Useful for development, immediate changes
 	- *Problem*: dependency on host filesystem
 
-**Bind Mounts** required for this project 
+**Docker Volumes** required for this project 
 
 ## 📝 Technical Notes
 
