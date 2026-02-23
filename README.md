@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by gvigano*
+*This project has been created as part of the 42 curriculum by giuliaviga*
 
 ## 📋 Table of Contents
 
@@ -42,7 +42,7 @@ git clone <repo>
 cd inception
 
 # 2. Customize configuration (see DEV_DOC.md)
-vim srcs/.env	# Set your login instead of 'gvigano'
+vim srcs/.env	# Set your login instead of 'giuliaviga'
 vim Makefile	# Adjust volume paths in 'setup:' and 'fclean'
 
 # 3. Start

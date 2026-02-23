@@ -86,13 +86,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/gvigano/data/wordpress
+      device: /home/giuliaviga/data/wordpress
   mariadb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/gvigano/data/mariadb
+      device: /home/giuliaviga/data/mariadb
 
 secrets:
   db_root_password:

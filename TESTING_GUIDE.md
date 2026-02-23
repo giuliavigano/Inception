@@ -72,7 +72,7 @@ docker logs <container_name>
 # Segui i log in tempo reale
 docker logs -f <container_name>
 
-# Ultimi 50 righe di log
+# Ultimi 5SHO0 righe di log
 docker logs --tail 50 <container_name>
 
 # Entra in un container (eseguire comandi dentro)

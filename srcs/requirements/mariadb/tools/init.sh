@@ -14,7 +14,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 		fi
 		sleep 1;
 	done
-	if [ "$i" = 0 ]; then
+	if [ "$i" = 30 ]; then # non 0 ma 30 (valore finale del for)
 		echo "Timeout: MySQL didn't respond";
 		exit 1;
 	fi
@@ -53,10 +53,3 @@ fi
 
 exec "$@" 
 
-# FLUSH PRIVILEGES;
-# EOF
-
-# 	mysql -u root -p"$ROOT_PWD" << EOF
-# DROP USER IF EXISTS 'root'@'localhost';
-# DROP USER IF EXISTS 'root'@'127.0.0.1';
-# DROP USER IF EXISTS 'root'@'::1';

@@ -206,10 +206,10 @@
 - [ ] README.md presente e completo (opzionale ma consigliato)
 - [ ] USER_DOC.md completo e chiaro
 - [ ] DEV_DOC.md completo e chiaro
-- [ ] Il dominio è configurato come `<login>.42.fr` (es: `gvigano.42.fr`)
+- [ ] Il dominio è configurato come `<login>.42.fr` (es: `giuliaviga.42.fr`)
 - [ ] Aggiungere il dominio in `/etc/hosts`:
   ```
-  127.0.0.1 gvigano.42.fr
+  127.0.0.1 giuliaviga.42.fr
   ```
 
 ## ✅ VERIFICA FINALE
@@ -242,11 +242,11 @@ docker network inspect inception
 docker volume ls
 
 # 8. Testa il sito
-curl -k https://gvigano.42.fr  # oppure il tuo dominio
+curl -k https://giuliaviga.42.fr  # oppure il tuo dominio
 
 # 9. Apri browser
-# https://gvigano.42.fr
-# https://gvigano.42.fr/wp-admin
+# https://giuliaviga.42.fr
+# https://giuliaviga.42.fr/wp-admin
 
 # 10. Test persistenza
 docker-compose down
