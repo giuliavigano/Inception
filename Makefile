@@ -7,10 +7,10 @@ check-secrets:
 	fi
 
 setup:
-	sudo mkdir -p /home/giuliaviga/data/mariadb
-	sudo mkdir -p /home/giuliaviga/data/wordpress
-	sudo chmod 775 /home/giuliaviga/data/mariadb
-	sudo chmod 775 /home/giuliaviga/data/wordpress
+	sudo mkdir -p /home/gvigano/data/mariadb
+	sudo mkdir -p /home/gvigano/data/wordpress
+	sudo chmod 775 /home/gvigano/data/mariadb
+	sudo chmod 775 /home/gvigano/data/wordpress
 
 build: check-secrets
 	docker compose --env-file srcs/.env build
@@ -27,8 +27,8 @@ clean:
 fclean:
 	docker compose --env-file srcs/.env stop
 	docker compose --env-file srcs/.env down -v --rmi all
-	sudo rm -rf /home/giuliaviga/data/mariadb
-	sudo rm -rf /home/giuliaviga/data/wordpress
+	sudo rm -rf /home/gvigano/data/mariadb
+	sudo rm -rf /home/gvigano/data/wordpress
 
 logs:
 	docker compose --env-file srcs/.env logs -f

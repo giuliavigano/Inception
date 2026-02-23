@@ -43,7 +43,7 @@ cd inception
 Edit the `srcs/.env` file with your data:
 
 ```bash
-# Replace 'giuliaviga' with your login
+# Replace 'gvigano' with your login
 DOMAIN_NAME=yours_login.42.fr
 
 WP_ADMIN_USER=yours_login
@@ -55,7 +55,7 @@ DB_DATA_PATH=/home/yours_login/data/mariadb
 ```
 
 ```bash
-# Replace 'giuliaviga' with your login in these Makefile commands
+# Replace 'gvigano' with your login in these Makefile commands
 setup:
 	sudo rm -rf /home/yours_login/data/mariadb
 	sudo rm -rf /home/yours_login/data/wordpress
@@ -77,7 +77,7 @@ fclean:
 
 ```bash
 # Replace the domain name in the setup-ssl.sh file with yours in this code line
--subj "/C=IT/ST=Lazio/L=Roma/O=42/CN=giuliaviga.42.fr"
+-subj "/C=IT/ST=Lazio/L=Roma/O=42/CN=gvigano.42.fr"
 ```
 
 > ⚠️ **Important**: The only necessary changes are the domain name, admin user/email, and volume paths with your username.
@@ -254,8 +254,8 @@ ls -la /home/yours_login/data/mariadb
 ls -la /home/yours_login/data/wordpress
 
 # To clean data you must do it manually:
-sudo rm -rf /home/giuliaviga/data/wordpress/*
-sudo rm -rf /home/giuliaviga/data/mariadb/*
+sudo rm -rf /home/gvigano/data/wordpress/*
+sudo rm -rf /home/gvigano/data/mariadb/*
 
 ```
 
