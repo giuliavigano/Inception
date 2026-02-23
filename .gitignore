@@ -2,4 +2,4 @@
 secrets/
 
 # Environment variables
-srcs/.env
+# ssrcs/.env
